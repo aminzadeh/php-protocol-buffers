@@ -2,7 +2,6 @@
 
 namespace protobuf\io\writer;
 
-use protobuf\compiler\Parser;
 use protobuf\Encoder;
 
 /**
@@ -16,18 +15,11 @@ abstract class Writer
     protected $encoder;
 
     /**
-     * @var protobuf\compiler\Parser
-     */
-    protected $parser;
-
-    /**
      * @param protobuf\Encoder $encoder
-     * @param protobuf\compiler\Parser $parser
      */
-    public function __construct(Encoder $encoder, Parser $parser)
+    public function __construct(Encoder $encoder)
     {
         $this->encoder = $encoder;
-        $this->parser = $parser;
     }
 
     /**
@@ -35,17 +27,16 @@ abstract class Writer
      * @param array $data object to encode
      * @return string binary string
      */
-    protected function encode($file, array $data)
+    protected function encode(array $spec, array $data)
     {
-        $spec = $this->parser->parse($file);
-        $string = $this->encoder->encode($spec, $object);
+        $string = $this->encoder->encode($spec, $data);
         return $string;
     }
 
     /**
-     * @param string $spec
+     * @param array $spec
      * @param array $data
      * @return mixed
      */
-    abstract public function write($spec, array $data);
+    abstract public function write(array $spec, array $data);
 }
