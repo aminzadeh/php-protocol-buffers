@@ -12,8 +12,8 @@ class Mapper
 
             } else {
                 $setter = 'set' . ucfirst($field);
-                if (method_exists($object, $method)) {
-                    $object->$method($value);
+                if (method_exists($object, $setter)) {
+                    $object->$setter($value);
                 }
             }
         }
