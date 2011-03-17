@@ -9,12 +9,10 @@
 namespace protobuf;
 
 use protobuf\io\reader\Reader;
-
 use protobuf\io\reader\String;
-
 use protobuf\compiler\ParserImpl;
 use protobuf\io\writer\String as StringWriter;
-use protobuf\io\writer\Writer as StringReader;
+use protobuf\io\writer\String as StringReader;
 
 /**
  * Abstract Message
@@ -35,6 +33,21 @@ abstract class Message
      * @var Writer
      */
     protected $writer;
+
+    /**
+     * @var Encoder
+     */
+    protected $encoder;
+
+    /**
+     * @var Decoder
+     */
+    protected $decoder;
+
+    /**
+     * @var Parser
+     */
+    protected $parser;
 
     /**
      * @param string $name
@@ -98,7 +111,9 @@ abstract class Message
     public function getWriter()
     {
         if (null === $this->writer) {
-            $writer = self::createDefaultWriter();
+            $parser = $this->getParser();
+            $encoder = $this->getEncoder();
+            $writer = self::createDefaultWriter($parser, $encoder);
             $this->setWriter($writer);
         }
         return $this->writer;
@@ -110,7 +125,9 @@ abstract class Message
     public function getReader()
     {
         if (null === $this->reader) {
-            $reader = self::createDefaulrReader();
+            $parser = $this->getParser();
+            $decoder = $this->getDecoder();
+            $reader = self::createDefaultReader($parser, $decoder);
             $this->setReader($reader);
         }
         return $this->reader;
@@ -137,25 +154,117 @@ abstract class Message
     }
 
     /**
-     * @return Writer
+     * @param Encoder $encoder
+     * @return Message
      */
-    protected static function createDefaultWriter()
+    public function setEncoder(Encoder $encoder)
+    {
+        $this->encoder = $encoder;
+        return $this;
+    }
+
+    /**
+     * @param Decoder $decoder
+     * @return Message
+     */
+    public function setDecoder(Decoder $decoder)
+    {
+        $this->decoder = $decoder;
+        return $this;
+    }
+
+    /**
+     * @return Decoder
+     */
+    protected static function createDefaultDecoder()
+    {
+        $decoder = new DecoderImpl();
+        return $decoder;
+    }
+
+    /**
+     * @return Encoder
+     */
+    protected static function createDefaultEncoder()
     {
         $encoder = new EncoderImpl();
-        $parser = new ParserImpl();
+        return $encoder;
+    }
+
+    /**
+     * @return Encoder
+     */
+    public function getEncoder()
+    {
+        if (null === $this->encoder) {
+            $this->encoder = self::createDefaultEncoder();
+        }
+        return $this->encoder;
+    }
+
+    /**
+     * @return Decoder
+     */
+    public function getDecoder()
+    {
+        if (null === $this->decoder) {
+            $this->decoder = self::createDefaultDecoder();
+        }
+        return $this->decoder;
+    }
+
+    /**
+     * @param Parser $parser
+     * @param Encoder $encoder
+     * @return Writer
+     */
+    protected static function createDefaultWriter(Parser $parser
+        , Encoder $encoder)
+    {
         $writer = new StringWriter($encoder, $parser);
         return $writer;
     }
 
     /**
+     * @param Parser $parser
+     * @param Decoder $decoder
      * @return Reader
      */
-    protected static function createDefaulrReader()
+    protected static function createDefaultReader(Parser $parser
+        , Decoder $decoder)
     {
-        $decoder = new DecoderImpl();
-        $parser = new ParserImpl();
         $reader = new StringReader($decoder, $parser);
         return $reader;
+    }
+
+    /**
+     * @param Parser $parser
+     * @return Message
+     */
+    public function setParser(Parser $parser)
+    {
+        $this->parser = $parser;
+        return $this;
+    }
+
+    /**
+     * @return Parser
+     */
+    protected static function createDefaultParser()
+    {
+        $parser = new ParserImpl();
+        return $parser;
+    }
+
+    /**
+     * @return Parser
+     */
+    public function getParser()
+    {
+        if (null === $this->parser) {
+            $this->parser = self::createDefaultParser();
+        }
+        return $this->parser;
     }
 
     /**
@@ -168,8 +277,8 @@ abstract class Message
     public function read()
     {
         $args = func_get_args();
-        $data = call_user_func_array(array($this->reader, 'read'), $args);
-        return $data;
+        $data = call_user_func_array(array($this->getReader(), 'read'), $args);
+        $this->container = $data;
     }
 
     /**
@@ -182,8 +291,35 @@ abstract class Message
     public function write()
     {
         $args = func_get_args();
-        $output =
+        $result =
             call_user_func_array(array($this->getWriter(), 'write', $args));
-        return $output;
+        return $result;
+    }
+
+    /**
+     * Proxy method for {@link protobuf\Decoder::decode()}
+     *
+     * @param string $string
+     * @todo define specification
+     */
+    public function decode($string)
+    {
+        $spec = array();
+        $data = $this->getDecoder()->decode($spec, $string);
+        $this->container = $data;
+    }
+
+    /**
+     * Proxy method for {@link protobuf\Encoder::encode()}
+     *
+     * @return string Binary-encoded string
+     * @todo define specification
+     */
+    public function encode()
+    {
+        $spec = array();
+        $data = $this->container;
+        $string = $this->getEncoder()->encode($spec, $data);
+        return $string;
     }
 }
