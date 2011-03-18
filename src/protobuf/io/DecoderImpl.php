@@ -1,6 +1,6 @@
 <?php
 
-namespace protobuf;
+namespace protobuf\io;
 
 /**
  * Decode binary string into PHP array

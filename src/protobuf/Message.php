@@ -8,9 +8,9 @@
 
 namespace protobuf;
 
+use protobuf\compiler\ParserImpl;
 use protobuf\io\reader\Reader;
 use protobuf\io\reader\String;
-use protobuf\compiler\ParserImpl;
 use protobuf\io\writer\String as StringWriter;
 use protobuf\io\writer\String as StringReader;
 
