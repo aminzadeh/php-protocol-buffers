@@ -110,7 +110,7 @@ abstract class Message
     /**
      * @return Writer
      */
-    public function getWriter()
+    protected function getWriter()
     {
         if (null === $this->writer) {
             $parser = $this->getParser();
@@ -124,7 +124,7 @@ abstract class Message
     /**
      * @return Reader
      */
-    public function getReader()
+    protected function getReader()
     {
         if (null === $this->reader) {
             $parser = $this->getParser();
@@ -196,7 +196,7 @@ abstract class Message
     /**
      * @return Encoder
      */
-    public function getEncoder()
+    protected function getEncoder()
     {
         if (null === $this->encoder) {
             $this->encoder = self::createDefaultEncoder();
@@ -207,7 +207,7 @@ abstract class Message
     /**
      * @return Decoder
      */
-    public function getDecoder()
+    protected function getDecoder()
     {
         if (null === $this->decoder) {
             $this->decoder = self::createDefaultDecoder();
@@ -261,7 +261,7 @@ abstract class Message
     /**
      * @return Parser
      */
-    public function getParser()
+    protected function getParser()
     {
         if (null === $this->parser) {
             $this->parser = self::createDefaultParser();
