@@ -2,7 +2,7 @@
 
 namespace protobuf\io\writer;
 
-use protobuf\Encoder;
+use protobuf\io\Encoder;
 
 /**
  * Abstract writer

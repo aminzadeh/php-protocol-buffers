@@ -1,6 +1,6 @@
 <?php
 
-namespace protobuf;
+namespace protobuf\io;
 
 /**
  * Encode PHP array into binary string

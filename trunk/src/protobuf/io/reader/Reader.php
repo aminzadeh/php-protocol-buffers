@@ -2,8 +2,7 @@
 
 namespace protobuf\io\reader;
 
-use protobuf\compiler\Parser;
-use protobuf\Decoder;
+use protobuf\io\Decoder;
 
 /**
  * Abstract reader
