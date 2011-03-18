@@ -9,6 +9,8 @@
 namespace protobuf;
 
 use protobuf\compiler\ParserImpl;
+use protobuf\io\DecoderImpl;
+use protobuf\io\EncoderImpl;
 use protobuf\io\reader\Reader;
 use protobuf\io\reader\String;
 use protobuf\io\writer\String as StringWriter;
