@@ -32,3 +32,4 @@ class Mapper
         return $data;
     }
 }
+
